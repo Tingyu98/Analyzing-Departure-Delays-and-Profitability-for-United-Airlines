@@ -1,0 +1,119 @@
+---
+title: "project2"
+output: html_document
+date: "2023-11-16"
+---
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+```{r}
+ua_flights <- flights%>%
+  filter(carrier=='UA')%>%
+  mutate(late = dep_delay > 0,
+         very_late = dep_delay > 30,
+         net_gain =  dep_delay - arr_delay)
+ua_flights
+```
+
+1.Does the average gain differ for flights that departed late versus those that did not? What about for flights that departed more than 30 minutes late?
+
+
+```{r}
+ggplot(data=ua_flights, aes(x= net_gain))+
+  geom_histogram()+
+  xlab('Net Gain')
+```
+
+
+
+
+```{r}
+t.test(net_gain~late,data=ua_flights, alternative = "two.sided")
+```
+reject null hypothesis and mean of late is lower then not late
+
+
+```{r}
+t.test(net_gain~very_late,data=ua_flights, alternative = "two.sided") 
+```
+
+2.What are the five most common destination airports for United Airlines flights from New York City? Describe the distribution and the average gain for each of these five airports.
+
+```{r}
+by_dest <- ua_flights %>%
+  group_by(dest) %>%
+  summarize(count = n(), mean_net_gain = mean(net_gain, na.rm = TRUE)) %>%
+  arrange(desc(count))
+by_dest
+```
+five most common destination : ORD, IAH, SFO, LAX, DEN
+
+
+```{r}
+five_dest <- ua_flights%>%
+  filter(dest %in% c('ORD', 'IAH', 'SFO', 'LAX', 'DEN'))
+
+ggplot(five_dest, aes(x=dest, y=net_gain))+
+  geom_boxplot()+
+  xlab('Destination')+
+  ylab('Net Gain')
+```
+
+```{r}
+t.test(ua_flights$net_gain[ua_flights$dest=='SFO'],ua_flights$net_gain[ua_flights$dest=='IAH'], alternative = "two.sided") 
+```
+make hypothesis test of hightest mean and lowest mean.
+
+3.Another common measure of interest, in addition to total gain, is the gain relative to the duration of the flight. Calculate the gain per hour by dividing the total gain by the duration in hours of each flight. Does the average gain per hour differ for flights that departed late versus those that did not? What about for flights that departed more than 30 minutes late?
+
+```{r}
+ua_flights <- ua_flights %>%
+  mutate(gain_per_hour = net_gain / hour)
+ua_flights
+```
+
+```{r}
+t.test(gain_per_hour~late,data=ua_flights, alternative = "two.sided") 
+```
+
+```{r}
+t.test(gain_per_hour~very_late,data=ua_flights, alternative = "two.sided") 
+```
+
+```{r}
+ggplot(data=ua_flights, aes(x= gain_per_hour))+
+  geom_histogram()+
+  xlab('Gain per Hour')
+```
+
+
+4.Does the average gain per hour differ for longer flights versus shorter flights?
+
+```{r}
+ggplot(data=ua_flights, aes(x= factor(hour), y= gain_per_hour))+
+  geom_boxplot()+
+  xlab('Flight Duration')+
+  ylab('Gain per Hour')
+```
+
+define 5-13 shorter flight, 14-23 longer flight
+
+```{r}
+ua_flights <- ua_flights %>%
+  mutate(duration = ifelse(hour >= 14, "long", "short"))
+ua_flights
+```
+
+
+
+```{r}
+t.test(gain_per_hour~duration,data=ua_flights, alternative = "two.sided") 
+```
+
+
+
+
+
+

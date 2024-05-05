@@ -1,0 +1,160 @@
+---
+title: "Project1_Ting-Yu Lin"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+In this project, we will use the data included in the nycflights13 package to conduct an exploratory data analysis and permutation tests to analyze departure delays for United Airlines (carrier code UA). 
+
+```{r}
+ua_flights <- flights%>%
+  filter(carrier=='UA')
+print(ua_flights)
+```
+
+##Time of day
+
+```{r}
+ua_flights_day <- ua_flights %>%
+  group_by(hour) %>%
+  summarize(total_dep_delay = sum(dep_delay, na.rm = TRUE))
+ua_flights_day
+```
+
+```{r}
+#ggplot(data = ua_flights, aes(x = factor(day), y = dep_delay)) +
+#  geom_boxplot() +
+#  ylim(-25,100)
+```
+
+
+```{r}
+ua_flights_day <- ua_flights%>%
+  group_by(hour)%>%
+  summarize(mean_dep_delay = mean(dep_delay, na.rm = TRUE))
+ggplot(data = ua_flights_day, mapping = aes(x = hour, y = mean_dep_delay)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  geom_line() +
+  labs(x = "hour", y = "Mean Departure Delay") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+```{r}
+#ua_flights_day <- ua_flights %>%
+#  group_by(day) %>%
+#  summarize(total_dep_delay = sum(dep_delay, na.rm = TRUE))
+#ggplot(ua_flights_day, aes(x = day, y = total_dep_delay)) +
+#geom_bar(stat = "identity", fill = "blue") +
+#  labs(x = "Day", y = "Total Departure Delay") +
+#  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+##Time of year
+
+```{r}
+ua_flights_year <- ua_flights %>%
+  group_by(month) %>%
+  summarize(mean_dep_delay = mean(dep_delay, na.rm = TRUE))
+#ua_flights_year
+ggplot(data = ua_flights_year, mapping = aes(x = factor(month), y = mean_dep_delay)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  labs(x = "Month", y = "Mean Departure Delay")
+```
+
+
+
+
+```{r}
+#ua_flights_year <- ua_flights %>%
+#  group_by(year) %>%
+#  summarize(total_dep_delay_ = sum(dep_delay, na.rm = TRUE))
+#ua_flights_year
+```
+
+##Temperature
+
+```{r}
+flights_weather <- merge(ua_flights, weather, by = "time_hour")
+flights_weather
+```
+```{r}
+ggplot(data = flights_weather, aes(x = temp, y = dep_delay)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(method = "loess", se = FALSE, color = "blue") +
+  labs(x = "Temperature (°F)", y = "Departure Delay (minutes)") +
+  ggtitle("Relationship Between Temperature and Departure Delays")
+```
+
+
+##Wind speed
+```{r}
+
+wind_speed <- flights_weather %>%
+  group_by(wind_speed) %>%
+  summarise(delay_mean = mean(dep_delay, na.rm = TRUE))
+
+ggplot(data = wind_speed, aes(x = wind_speed, y = delay_mean)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Wind Speed", y = "Mean Departure Delay (minutes)") +
+  ggtitle("Relationship Between Wind Speed and Mean Departure Delays")
+
+```
+
+```{r}
+wind_speed <- flights_weather %>%
+  summarise(delay = mean(dep_delay, na.rm = TRUE))
+
+ggplot(data = prec, aes(x = precip, y = delay)) +
+  geom_line() +
+  geom_point()
+```
+
+
+
+The analysis of wind speed and departure delays indicates a positive correlation. As wind speed increases, departure delays tend to increases. This suggests that higher wind speeds can impact flight schedules.
+
+##Precipitation
+
+```{r}
+ggplot(data = flights_weather, aes(x = precip, y = dep_delay)) +
+  geom_point() +
+  labs(x = "Precipitation", y = "Departure Delay (minutes)") +
+  ggtitle("Relationship Between Precipitation and Departure Delays")
+```
+```{r}
+prec <- flights_weather %>%
+  group_by(precip) %>%
+  summarise(delay = mean(dep_delay, na.rm = TRUE))
+
+ggplot(data = prec, aes(x = precip, y = delay)) +
+  geom_line() +
+  geom_point()
+```
+Almost any amount of precipitation is associated with a delay. However, there is not a strong a trend above 0.02 in. of precipitation
+
+
+##Visibility
+
+```{r}
+ggplot(data = flights_weather, aes(x = factor(visib), y = dep_delay)) +
+  geom_boxplot(alpha=0.2) +
+  ylim(-20, 100)
+  labs(x = "Visibility", y = "Departure Delay (minutes)") +
+  ggtitle("Relationship Between Visibility and Departure Delays")
+
+```
+
+```{r}
+visibility<-flights_weather %>%
+  #mutate(visib_cat = cut_interval(visib, n = 10)) %>%
+  group_by(visib) %>%
+  summarise(dep_delay = mean(dep_delay, na.rm = TRUE)) 
+
+ggplot(data=visibility, aes(x = visib, y = dep_delay)) +
+  geom_point()+
+  geom_line()
+```
+There seems to be a stronger relationship between visibility and delay. Delays are higher when visibility is less than 2 miles.
