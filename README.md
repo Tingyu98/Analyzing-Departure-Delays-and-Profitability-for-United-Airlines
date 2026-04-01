@@ -4,14 +4,14 @@
 - Analyzed United Airlines flight performance using the nycflights13 dataset  
 - Identified key drivers of departure delays including time of day, seasonality, and weather conditions  
 - Established statistical relationships between delays and profitability using hypothesis testing  
-- Derived actionable insights for improving operational efficiency and flight profitability  
+- Derived actionable insights to improve operational efficiency and flight profitability  
 
 ---
 
 ## Overview
 This project analyzes departure delays and profitability for United Airlines using the nycflights13 dataset.
 
-By combining exploratory data analysis, statistical testing, and data integration with weather data, the project identifies key factors affecting flight delays and evaluates how operational efficiency impacts profitability.
+By combining exploratory data analysis, statistical testing, and integration with weather data, the project identifies key factors affecting flight delays and evaluates how operational efficiency impacts profitability.
 
 ---
 
@@ -27,7 +27,7 @@ By combining exploratory data analysis, statistical testing, and data integratio
 - **Data**: nycflights13 dataset (filtered for United Airlines flights)  
 - **Feature Engineering**:  
   - Created delay indicators (late, very_late)  
-  - Computed net gain (departure delay - arrival delay)  
+  - Computed net gain (departure delay vs arrival delay)  
   - Calculated gain per hour for profitability analysis  
 - **Data Integration**: Merged flight data with weather dataset  
 - **EDA**:  
@@ -43,17 +43,17 @@ By combining exploratory data analysis, statistical testing, and data integratio
 ## Results & Insights
 
 ### Delay Analysis
-- Departure delays increase throughout the day, peaking in evening hours (~5 PM) :contentReference[oaicite:2]{index=2}  
-- Summer months and December show higher delays due to increased travel demand :contentReference[oaicite:3]{index=3}  
+- Departure delays increase throughout the day, peaking in evening hours  
+- Summer months and December show higher delays due to increased travel demand  
 - Weather factors significantly impact delays:  
   - Higher temperature (>60°F) correlates with increased delays  
   - Increased wind speed and precipitation lead to higher delays  
-  - Low visibility (<2.5 miles) strongly associated with delays :contentReference[oaicite:4]{index=4}  
+  - Low visibility (<2.5 miles) is strongly associated with delays  
 
 ### Profitability Analysis
-- Flights departing on time generate significantly higher net gain (p < 2.2e-16) :contentReference[oaicite:5]{index=5}  
-- Shorter flights yield higher gain per hour compared to longer flights :contentReference[oaicite:6]{index=6}  
-- Popular routes (e.g., SFO) show higher profitability than less frequent routes (e.g., IAH) :contentReference[oaicite:7]{index=7}  
+- Flights departing on time generate significantly higher net gain  
+- Shorter flights yield higher gain per hour compared to longer flights  
+- Popular routes show higher profitability than less frequent routes  
 
 ---
 
